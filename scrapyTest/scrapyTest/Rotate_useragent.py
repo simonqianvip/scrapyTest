@@ -9,6 +9,9 @@
 
 import random
 from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
+import logging
+
+logger = logging.getLogger(__name__)
 
 class RotateUserAgentMiddleware(UserAgentMiddleware):
 
@@ -16,14 +19,14 @@ class RotateUserAgentMiddleware(UserAgentMiddleware):
         self.user_agent = user_agent
 
     def process_request(self, request, spider):
-        print('-----------process_request------------do')
+        logger.info('-----------process_request------------do')
         ua = random.choice(self.user_agent_list)
         if ua:
             #显示当前使用的useragent
-            print "********Current UserAgent:%s************" %ua
+            logger.info("********Current UserAgent:%s************")%ua
 
             #记录
-            # log.msg('Current UserAgent: '+ua, level='INFO')
+            # logger.msg('Current UserAgent: '+ua, level='INFO')
             request.headers.setdefault('User-Agent', ua)
 
     #the default user_agent_list composes chrome,I E,firefox,Mozilla,opera,netscape
