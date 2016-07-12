@@ -8,7 +8,8 @@ from scrapy.selector import HtmlXPathSelector
 import sys
 import logging
 
-
+reload(sys)
+sys.setdefaultencoding('utf-8')
 # from scrapy import log
 PAGE = "http://www.enaihuo.com/news/list-629.html"
 
@@ -46,6 +47,7 @@ class DmozSpider(scrapy.Spider):
         url_item = []
         for i in range(2, int(sum_page) + 1, 1):
             url = sp[0] + "-" + str(i) + ".html"
+            url_item.append(PAGE)
             url_item.append(url)
         #page_url集合
         i = 0
@@ -61,6 +63,7 @@ class DmozSpider(scrapy.Spider):
         """
         解析每个page页里所有文章的url
         """
+        print(response.url)
         logger.info('-----------parse_url------------do')
         sel = Selector(response)
         sites = sel.xpath('//div/dl/dd/div')
@@ -77,9 +80,13 @@ class DmozSpider(scrapy.Spider):
             item['link'] = url.encode('utf-8')
             item['title'] = [t.encode('utf-8') for t in title]
             items.append(item)
+        i = 0
         for item in items:
             yield Request(item['link'], meta={'item': item}, callback=self.parse_content)
+            i+=1
             print('link=%s'%item['link'])
+            if i==2:
+                break
 
     def parse_content(self, response):
         """
